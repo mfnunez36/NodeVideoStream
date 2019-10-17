@@ -5,16 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Visualizar</title>
+    <script src="https://code.jquery.com/jquery-1.11.2.min.js"></script>
     <script type="text/javascript" src="/socket.io/socket.io.js"></script>
 </head>
 <body>
     <img id="play" src="" alt="">
+
+    <video src="" id="video" style="width:100px; heigth:100px;" autoplay="true">
+    </video>
+    <canvas style="display: none" id="preview" width="800px" height="600px"></canvas>
+    
     <script>
         var socket = io();
 
         socket.on('stream', function(image){
             var img = document.getElementById('play');
             img.src = image;
+        });
+
+        var canvas = document.getElementById("preview");
+        var context = canvas.getContext("2d");
+        canvas.heigth = 600;
+        canvas.width = 800;
+
+        context.width = canvas.width;
+        context.heigth = canvas.heigth;
+
+        var video = document.getElementById("video");
+
+        function LoadCam(stream){
+            video.audio = true;
+            video.srcObject = stream;
+        }
+
+        function LoadFail(stream){
+            video.srcObject = stream;
+        }
+
+        function viewVideo(video, context){
+            context.drawImage(video, 0, 0, context.width, context.heigth);
+            socket.emit('streampa', canvas.toDataURL('image/webp'));
+        }
+
+        $(function(){
+            navigator.getUserMedia = (navigator.getUserMedia || navigator.webkitGetUserMedia ||
+            navigator.msgGetUserMedia || mozGetUserMedia);
+
+            if(navigator.getUserMedia){
+                navigator.getUserMedia({ video : true, audio : true }, LoadCam, LoadFail);
+            }
+
+            setInterval(function(){
+                viewVideo(video, context);
+            }, 70);
         });
 
     </script>

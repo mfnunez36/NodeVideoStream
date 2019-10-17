@@ -20,7 +20,13 @@ io.on('connection', function(socket){
     socket.on('stream', function(img){
         socket.broadcast.emit('stream', img);
     });
-})
+});
+
+io.on('connection', function(socket){
+    socket.on('streampa', function(img){
+        socket.broadcast.emit('streampa', img);
+    });
+});
 
 http.listen(port, function(){
     console.log('Server puerto %s', port);

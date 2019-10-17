@@ -9,12 +9,20 @@
     <script type="text/javascript" src="/socket.io/socket.io.js"></script>
 </head>
 <body>
-    <video src="" id="video" style="width:680px; heigth:320px;" autoplay="true">
-    </video>
+    <img id="play" src="" alt="">
+
+    <video src="" id="video" style="width:100px; heigth:100px;" autoplay="true"></video>
 
     <canvas style="display: none" id="preview" width="800px" height="600px"></canvas>   
     
     <script type="text/javascript">
+        var socket = io();
+
+        socket.on('streampa', function(image){
+            var img = document.getElementById('play');
+            img.src = image;
+        });
+        
         var canvas = document.getElementById("preview");
         var context = canvas.getContext("2d");
         canvas.heigth = 600;
@@ -24,8 +32,7 @@
         context.heigth = canvas.heigth;
 
         var video = document.getElementById("video");
-        var socket = io();
-
+        
         function LoadCam(stream){
             video.audio = true;
             video.srcObject = stream;
@@ -45,7 +52,7 @@
             navigator.msgGetUserMedia || mozGetUserMedia);
 
             if(navigator.getUserMedia){
-                navigator.getUserMedia({ video : true }, LoadCam, LoadFail);
+                navigator.getUserMedia({ video : true, audio : true }, LoadCam, LoadFail);
             }
 
             setInterval(function(){
